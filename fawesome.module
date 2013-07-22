@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Drupal integration with Font Awesome, the iconic font for use with Bootstrap.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function fawesome_help($path, $arg) {
+  switch ($path) {
+  case 'admin/help#fawesome':
+    return '<p><i class="icon-flag icon-large"></i>' . t('<a href="@fawesome">Font Awesome</a> is an iconic font designed for use with <a href="@bootstrap">Twitter Bootstrap</a>.', array(
+      '@fawesome' => 'http://fortawesome.github.com/Font-Awesome/',
+      '@bootstrap' => 'http://twitter.github.com/bootstrap',
+    )) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_init().
+ */
+function fawesome_init() {
+  // Load up the Font Awesome CSS file.
+  drupal_add_library('fawesome', 'fawesome', TRUE);
+}
+
+function fawesome_sonar_css_alter(&$data, $file){
+  // Font Awesome path replace
+  $data = str_replace('../font/', url(drupal_get_path('module', 'fawesome').'/font/'), $data);
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function fawesome_library() {
+  $libraries['fawesome'] = array(
+    'title' => 'Font Awesome',
+    'website' => 'http://fortawesome.github.com/Font-Awesome/',
+    'version' => '3.2.1',
+    'css' => array(
+      drupal_get_path('module', 'fawesome') . '/assets/font-awesome.scss' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
+  return $libraries;
+}

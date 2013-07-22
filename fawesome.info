@@ -1,0 +1,8 @@
+name = Font Awesome
+description = Iconic font designed for use with Twitter Bootstrap.
+package = User interface
+core = 7.x
+version = "7.x-1.0"
+
+dependencies[] = sonar
+
