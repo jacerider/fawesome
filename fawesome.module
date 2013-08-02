@@ -49,3 +49,16 @@ function fawesome_library() {
 
   return $libraries;
 }
+
+/**
+ * Returns a list of all available fonts
+ */
+function fawesome_list(){
+  $file = file_get_contents(dirname(__FILE__) . '/assets/_icons.scss');
+  preg_match_all("/\.icon-(.*):before/",$file,$matches, PREG_PATTERN_ORDER);
+  $icons = array();
+  if(!empty($matches[1])){
+    $icons = $matches[1];
+  }
+  return $icons;
+}
