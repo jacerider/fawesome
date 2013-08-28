@@ -22,8 +22,7 @@ function fawesome_help($path, $arg) {
  * Implements hook_init().
  */
 function fawesome_init() {
-  // Load up the Font Awesome CSS file.
-  drupal_add_library('fawesome', 'fawesome', TRUE);
+  fawesome_load();
 }
 
 function fawesome_sonar_css_alter(&$data, $file){
@@ -32,22 +31,15 @@ function fawesome_sonar_css_alter(&$data, $file){
 }
 
 /**
- * Implements hook_libraries_info().
+ * Load font awesome into a page.
  */
-function fawesome_library() {
-  $libraries['fawesome'] = array(
-    'title' => 'Font Awesome',
-    'website' => 'http://fortawesome.github.com/Font-Awesome/',
-    'version' => '3.2.1',
-    'css' => array(
-      drupal_get_path('module', 'fawesome') . '/assets/font-awesome.scss' => array(
-        'type' => 'file',
-        'media' => 'screen',
-      ),
-    ),
-  );
-
-  return $libraries;
+function fawesome_load(){
+  // Load up the Font Awesome CSS file.
+  if(module_exists('sonar')){
+    drupal_add_library('fawesome', 'fawesome_scss', TRUE);
+  }else{
+    drupal_add_library('fawesome', 'fawesome_css', TRUE);
+  }
 }
 
 /**
@@ -61,4 +53,34 @@ function fawesome_list(){
     $icons = $matches[1];
   }
   return $icons;
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function fawesome_library() {
+  $libraries['fawesome_scss'] = array(
+    'title' => 'Font Awesome',
+    'website' => 'http://fortawesome.github.com/Font-Awesome/',
+    'version' => '3.2.1',
+    'css' => array(
+      drupal_get_path('module', 'fawesome') . '/assets/font-awesome.scss' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+  $libraries['fawesome_css'] = array(
+    'title' => 'Font Awesome',
+    'website' => 'http://fortawesome.github.com/Font-Awesome/',
+    'version' => '3.2.1',
+    'css' => array(
+      drupal_get_path('module', 'fawesome') . '/assets/font-awesome.min.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
+  return $libraries;
 }
