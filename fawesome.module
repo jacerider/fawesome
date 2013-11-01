@@ -27,7 +27,7 @@ function fawesome_init() {
 
 function fawesome_sonar_css_alter(&$data, $file){
   // Font Awesome path replace
-  $data = str_replace('../font/', url(drupal_get_path('module', 'fawesome').'/font/'), $data);
+  $data = str_replace('../fonts/', url(drupal_get_path('module', 'fawesome').'/fonts/'), $data);
 }
 
 /**
@@ -47,7 +47,8 @@ function fawesome_load(){
  */
 function fawesome_list(){
   $file = file_get_contents(dirname(__FILE__) . '/assets/_icons.scss');
-  preg_match_all("/\.icon-(.*):before/",$file,$matches, PREG_PATTERN_ORDER);
+  preg_match_all("/prefix\}-(.*)?:before/",$file,$matches, PREG_PATTERN_ORDER);
+  dsm($matches);
   $icons = array();
   if(!empty($matches[1])){
     $icons = $matches[1];
