@@ -25,9 +25,9 @@ function fawesome_init() {
   fawesome_load();
 }
 
-function fawesome_sonar_css_alter(&$data, $file){
+function fawesome_sonar_css_alter(&$css){
   // Font Awesome path replace
-  $data = str_replace('../fonts/', url(drupal_get_path('module', 'fawesome').'/fonts/'), $data);
+  $css = str_replace('../fonts/', base_path() . drupal_get_path('module', 'fawesome') . '/fonts/', $css);
 }
 
 /**
