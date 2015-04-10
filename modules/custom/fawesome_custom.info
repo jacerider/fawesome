@@ -1,0 +1,9 @@
+name = Font Awesome | Custom
+description = Provides the ability to define custom icons for text.
+package = User interface
+core = 7.x
+version = "7.x-1.0"
+
+configure = admin/config/user-interface/fawesome-custom
+
+dependencies[] = fawesome

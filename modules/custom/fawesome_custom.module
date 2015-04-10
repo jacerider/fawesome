@@ -1,0 +1,179 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function fawesome_custom_menu(){
+  $items['admin/config/user-interface/fawesome-custom'] = array(
+    'title' => 'Font Awesome',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fawesome_custom_form'),
+    'access arguments' => array('create fawesome text'),
+    'description' => t('Configure custom Font Awesome text bindings.')
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fawesome_custom_permission() {
+  $permissions = array(
+    'create fawesome text' => array(
+      'title' => t('Icons to text'),
+      'description' => t('Bind Font Awesome icons to text'),
+    ),
+  );
+  return $permissions;
+}
+
+/**
+ * Implements hook_fett_icons_alter().
+ */
+function fawesome_custom_fett_icons_alter(&$icons){
+  $values = variable_get('fawesome_custom', array());
+  foreach($values as $value){
+    $icons[$value['text']] = $value['icon'];
+  }
+}
+
+/**
+ * FAwesome form for binding text to icons.
+ */
+function fawesome_custom_form($form, &$form_state){
+
+  $form['#tree'] = TRUE;
+  $form['fawesome_custom'] = array(
+    '#type' => 'container',
+    '#prefix' => '<div id="fawesome-fieldset-wrapper">',
+    '#suffix' => '</div>',
+  );
+
+  $values = variable_get('fawesome_custom', array());
+  if (empty($form_state['num_names'])) {
+    $form_state['num_names'] = count($values) ? count($values) : 1;
+  }
+  for ($i = 0; $i < $form_state['num_names']; $i++) {
+    $form['fawesome_custom'][$i] = array(
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>',
+    );
+    $form['fawesome_custom'][$i]['text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Text'),
+      '#default_value' => isset($values[$i]['text']) ? $values[$i]['text'] : '',
+      '#prefix' => '<div class="columns medium-6">',
+      '#suffix' => '</div>',
+    );
+    $form['fawesome_custom'][$i]['icon'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Icon'),
+      '#default_value' => isset($values[$i]['icon']) ? $values[$i]['icon'] : '',
+      '#prefix' => '<div class="columns medium-6">',
+      '#suffix' => '</div>',
+    );
+  }
+  $form['fawesome_custom']['add_name'] = array(
+    '#type' => 'submit',
+    '#value' => t('Add one more'),
+    '#submit' => array('fawesome_custom_add_more_add_one'),
+    '#ajax' => array(
+      'callback' => 'fawesome_custom_add_more_callback',
+      'wrapper' => 'fawesome-fieldset-wrapper',
+    ),
+  );
+  if ($form_state['num_names'] > 1) {
+    $form['fawesome_custom']['remove_name'] = array(
+      '#type' => 'submit',
+      '#value' => t('Remove one'),
+      '#submit' => array('fawesome_custom_add_more_remove_one'),
+      '#ajax' => array(
+        'callback' => 'fawesome_custom_add_more_callback',
+        'wrapper' => 'fawesome-fieldset-wrapper',
+      ),
+    );
+  }
+  $form = system_settings_form($form);
+  $form['#submit'][] = 'fawesome_custom_form_submit';
+
+  $form['fawesome_icons'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Icons'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $rows = array();
+  $count = 0;
+  foreach(fawesome_list() as $icon){
+    if($count === 0){
+      $row = array();
+    }
+    $row[$icon] = '<i class="fa fa-'.$icon.'"></i> <small>' . $icon . '</small>';
+    if($count === 10){
+      $rows[] = $row;
+      $count = 0;
+    }
+    else{
+      $count++;
+    }
+  }
+  $header = array(array('data' => '', 'colspan' => count($rows[0])));
+  $form['fawesome_icons']['icons'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+    '#header' => $header,
+  );
+
+  return $form;
+}
+
+function fawesome_custom_form_submit($form, &$form_state){
+  // Clear Fett icon cache.
+  cache_clear_all('fett_icons_', 'cache', TRUE);
+}
+
+/**
+ * Callback for both ajax-enabled buttons.
+ *
+ * Selects and returns the fieldset with the names in it.
+ */
+function fawesome_custom_add_more_callback($form, $form_state) {
+  return $form['fawesome_custom'];
+}
+
+/**
+ * Submit handler for the "add-one-more" button.
+ *
+ * Increments the max counter and causes a rebuild.
+ */
+function fawesome_custom_add_more_add_one($form, &$form_state) {
+  $form_state['num_names']++;
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Submit handler for the "remove one" button.
+ *
+ * Decrements the max counter and causes a form rebuild.
+ */
+function fawesome_custom_add_more_remove_one($form, &$form_state) {
+  if ($form_state['num_names'] > 1) {
+    $form_state['num_names']--;
+  }
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Final submit handler.
+ *
+ * Reports what values were finally set.
+ */
+function fawesome_custom_add_more_submit($form, &$form_state) {
+  $output = t('These people are coming to the picnic: @names',
+    array(
+      '@names' => implode(', ', $form_state['values']['fawesome_custom']['name']),
+    )
+  );
+  drupal_set_message($output);
+}
