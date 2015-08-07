@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function fawesome_file_field_formatter_info() {
+  return array(
+    'fawesome_file_icon' => array(
+      'label' => t('Font awesome icon'),
+      'field types' => array('file'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function fawesome_file_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'fawesome_file_icon':
+      foreach ($items as $delta => $item) {
+        $file = (object) $item;
+        $icon = 'file-o';
+        switch(pathinfo($file->filename, PATHINFO_EXTENSION)){
+          case 'xls':
+          case 'xlsx':
+            $icon = 'file-excel-o';
+            break;
+          case 'doc':
+          case 'docx':
+            $icon = 'file-word-o';
+            break;
+          case 'gif':
+          case 'jpg':
+          case 'jpeg':
+          case 'png':
+            $icon = 'file-image-o';
+            break;
+          case 'zip':
+            $icon = 'file-archive-o';
+            break;
+          case 'pdf':
+            $icon = 'file-pdf-o';
+            break;
+          case 'mp3':
+            $icon = 'file-audio-o';
+            break;
+        }
+        $icon = '<i class="fa fa-' . $icon . '"></i>';
+        $options['attributes']['title'] = check_plain($file->filename);
+        $options['html'] = TRUE;
+        $link_icon = '<span class="file">' . $icon . '</span>';
+        $element[$delta] = array('#markup' => $link_icon);
+      }
+
+      break;
+  }
+  return $element;
+}
