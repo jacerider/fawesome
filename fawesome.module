@@ -67,6 +67,7 @@ function fawesome_library() {
       drupal_get_path('module', 'fawesome') . '/assets/font-awesome.scss' => array(
         'type' => 'file',
         'media' => 'screen',
+        'weight' => -100,
       ),
     ),
   );
@@ -78,6 +79,7 @@ function fawesome_library() {
       drupal_get_path('module', 'fawesome') . '/assets/font-awesome.min.css' => array(
         'type' => 'file',
         'media' => 'screen',
+        'weight' => -100,
       ),
     ),
   );
