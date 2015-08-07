@@ -1,0 +1,7 @@
+name = Font Awesome | Field
+description = Defines a new field and field formatter for choosing icons.
+package = User interface
+core = 7.x
+version = "7.x-1.0"
+
+dependencies[] = fawesome

@@ -1,0 +1,170 @@
+<?php
+
+/***************************************************************
+ * Field Type API hooks
+ ***************************************************************/
+
+/**
+ * Implements hook_field_info().
+ *
+ * Provides the description of the field.
+ */
+function fawesome_field_field_info() {
+  return array(
+    // We name our field as the associative name of the array.
+    'fawesome_field_icon' => array(
+      'label' => t('Font Awesome Icon'),
+      'description' => t('Provides for the selection of a Font Awesome icon.'),
+      'default_widget' => 'fawesome_field_select',
+      'default_formatter' => 'fawesome_field_icon',
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_field_is_empty().
+ *
+ * hook_field_is_emtpy() is where Drupal asks us if this field is empty.
+ * Return TRUE if it does not contain data, FALSE if it does. This lets
+ * the form API flag an error when required fields are empty.
+ */
+function fawesome_field_field_is_empty($item, $field) {
+  return empty($item['icon']);
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ *
+ * @see fawesome_field_field_formatter_view()
+ */
+function fawesome_field_field_formatter_info() {
+  return array(
+    'fawesome_field_icon' => array(
+      'label' => t('Display as icon'),
+      'field types' => array('fawesome_field_icon'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ *
+ * @see fawesome_field_field_formatter_info()
+ */
+function fawesome_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    // This formatter simply outputs the field as an icon.
+    case 'fawesome_field_icon':
+      foreach ($items as $delta => $item) {
+        $element[$delta] = array(
+          '#type' => 'html_tag',
+          '#tag' => 'i',
+          '#attributes' => array(
+            'class' => array('fa', $item['icon']),
+          ),
+          '#value' => '',
+        );
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_info().
+ *
+ * @see fawesome_field_field_widget_form()
+ */
+function fawesome_field_field_widget_info() {
+  return array(
+    'fawesome_field_select' => array(
+      'label' => t('Icon select'),
+      'field types' => array('fawesome_field_icon'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ *
+ * hook_widget_form() is where Drupal tells us to create form elements for
+ * our field's widget.
+ *
+ * We provide one of three different forms, depending on the widget type of
+ * the Form API item provided.
+ *
+ * The 'fawesome_field_colorpicker' and 'fawesome_field_text' are essentially
+ * the same, but fawesome_field_colorpicker adds a javascript colorpicker
+ * helper.
+ *
+ * fawesome_field_select displays three text fields, one each for red, green,
+ * and blue. However, the field type defines a single text column,
+ * rgb, which needs an HTML color spec. Define an element validate
+ * handler that converts our r, g, and b fields into a simulated single
+ * 'icon' form element.
+ */
+function fawesome_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $value = isset($items[$delta]['icon']) ? $items[$delta]['icon'] : '';
+
+  $widget = $element;
+  $widget['#delta'] = $delta;
+
+  switch ($instance['widget']['type']) {
+
+    case 'fawesome_field_select':
+
+      // Make this a fieldset with the three text fields.
+      $widget += array(
+        '#type' => 'fieldset',
+        '#delta' => $delta,
+        '#attributes' => array(
+          'class' => array('fawesome-field-icon')
+        ),
+      );
+
+      $icons = array();
+      foreach(fawesome_list() as $icon){
+        $icons[] = 'fa-' . $icon;
+      }
+
+      $widget['icon'] = array(
+        '#type' => 'textfield',
+        '#default_value' => $value,
+        '#required' => $instance['required'],
+        '#prefix' => '
+          <span class="prefix fawesome-field-icon-wrapper">
+            <a href="#" class="fawesome-field-icon-ops">
+              <span class="fawesome-field-icon-select">&nbsp;<i class="fa"></i>&nbsp;</span>
+              <span class="fawesome-field-icon-browse">' . t('Browse') . '</span>
+            </a>
+            <a href="#" class="fawesome-field-icon-clear">
+              Clear
+            </a>
+          </span>
+          <div class="element-hidden">
+        ',
+        '#suffix' => '</div>',
+        '#attached' => array(
+          'css' => array(drupal_get_path('module', 'fawesome_field') . '/fawesome_field.css'),
+          'js' => array(
+            drupal_get_path('module', 'fawesome_field') . '/fawesome_field.iconpicker.js',
+            drupal_get_path('module', 'fawesome_field') . '/fawesome_field.js',
+            array(
+              'data' => array('fawesome_field' => array('icons' => $icons)),
+              'type' => 'setting',
+            ),
+          ),
+        ),
+      );
+
+      break;
+
+  }
+
+  $element['icon'] = $widget;
+  return $element;
+}
