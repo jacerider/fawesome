@@ -3,7 +3,11 @@
 /**
  * @file
  * Drupal integration with Font Awesome, the iconic font for use with Bootstrap.
+ *
+ * This is the main module file for Fawesome.
  */
+
+require_once dirname(__FILE__) . '/fawesome.fapi.inc';
 
 /**
  * Implements hook_help().
@@ -25,6 +29,9 @@ function fawesome_init() {
   fawesome_load();
 }
 
+/**
+ * Implements fawesome_sonar_css_alter().
+ */
 function fawesome_sonar_css_alter(&$css){
   // Font Awesome path replace
   $css = str_replace('../fonts/', base_path() . drupal_get_path('module', 'fawesome') . '/fonts/', $css);
@@ -43,6 +50,17 @@ function fawesome_load(){
 }
 
 /**
+ * Implements hook_theme().
+ */
+function fawesome_theme(){
+  return array(
+    'fawesome_select' => array(
+      'render element' => 'element',
+    ),
+  );
+}
+
+/**
  * Returns a list of all available fonts
  */
 function fawesome_list(){
@@ -53,6 +71,132 @@ function fawesome_list(){
     $icons = $matches[1];
   }
   return $icons;
+}
+
+function fawesome_test(){
+  $function = 'fawesome_text';
+
+  $check = $function('View');
+  dsm($check);
+  $check = $function('Save');
+  dsm($check);
+  $check = $function('Save me');
+  dsm($check);
+  $check = $function('Now save');
+  dsm($check);
+  $check = $function('Now save me');
+  dsm($check);
+}
+
+/**
+ * Return text with icon preprended.
+ */
+function fawesome_text($text){
+  if($icon = fawesome_match($text)){
+    return '<i class="fa fa-' . $icon['icon'] . '"></i> ' . $text;
+  }
+  return FALSE;
+}
+
+/**
+ * Match text to find a valid icon.
+ */
+function fawesome_match($text){
+  $cache = &drupal_static(__FUNCTION__);
+  $text = strtolower($text);
+  if(!isset($icons[$text])){
+    $icons = fawesome_icons();
+    $cache[$text] = isset($icons[$text]) ? array('icon' => $icons[$text]) : FALSE;
+    if(!$cache[$text]){
+      $matches = array();
+      foreach($icons as $pattern => $data){
+        if(preg_match('!' . $pattern . '!', $text)){
+          if(!is_array($data)){
+            $data = array('icon' => $data);
+          }
+          $cache[$text] = $data;
+          break;
+        }
+      }
+    }
+  }
+  return $cache[$text];
+}
+
+/**
+ * Text to icon definition.
+ */
+function fawesome_icons(){
+  global $theme_key;
+  $icons = &drupal_static(__FUNCTION__);
+  if(!isset($icons)){
+    $cache_key = 'fawesome_icons_' . $theme_key;
+    if ($cache = cache_get($cache_key)) {
+      $icons = $cache->data;
+    }
+    else{
+      // Allow modules to add their own icons.
+      $hook = 'fawesome_icons';
+      $icons = array();
+      foreach (module_implements($hook) as $module) {
+        // Calling all modules implementing hook_hook_name and
+        // Returning results than pushing them into the $result array:
+        $icons += module_invoke($module, $hook);
+      }
+       // Let the themes play too, because pre render is a very themey thing.
+      foreach ($GLOBALS['base_theme_info'] as $base) {
+        $function = $base->name . '_' . $hook;
+        if (function_exists($function)) {
+          $icons += $function();
+        }
+      }
+      $function = $GLOBALS['theme'] . '_' . $hook;
+      if (function_exists($function)) {
+        $icons += $function();
+      }
+      // Allow others to add their own icons.
+      drupal_alter($hook, $icons);
+      // Text should always be lowercase.
+      $icons = array_change_key_case($icons, CASE_LOWER);
+      // Cache results.
+      cache_set($cache_key, $icons, 'cache');
+    }
+  }
+  return $icons;
+}
+
+/**
+ * Implements hook_fawesome_icons().
+ */
+function fawesome_fawesome_icons(){
+  return array(
+    '^view'               => 'eye',
+    '^edit'               => 'edit',
+    '^create'             => 'plus-square',
+    '^delete'             => 'trash-o',
+    'devel'               => 'code',
+    'log out'             => 'power-off',
+    'logout'              => 'power-off',
+    'my account'          => 'user',
+    'home'                => 'home',
+    'manage display'      => 'desktop',
+    'manage registration' => 'flag',
+    'registrations'       => 'flag',
+    'email registrants'   => 'envelope',
+    'dashboard'           => 'dashboard',
+    'menus'               => 'sitemap',
+    'taxonomy'            => 'tag',
+    'users'               => 'users',
+    'translations'        => 'globe',
+    'translate'           => 'globe',
+    'settings'            => 'cog',
+    'webform'             => 'th-list',
+    'results'             => 'bar-chart-o',
+    'order nodes'         => 'arrows',
+    'order items'         => 'arrows',
+    'nodequeue'           => 'sort',
+    'path-based metatags' => 'tag',
+  );
 }
 
 /**
@@ -67,7 +211,7 @@ function fawesome_library() {
       drupal_get_path('module', 'fawesome') . '/assets/font-awesome.scss' => array(
         'type' => 'file',
         'media' => 'screen',
-        'weight' => -100,
+        'group' => CSS_SYSTEM,
       ),
     ),
   );
@@ -79,10 +223,24 @@ function fawesome_library() {
       drupal_get_path('module', 'fawesome') . '/assets/font-awesome.min.css' => array(
         'type' => 'file',
         'media' => 'screen',
-        'weight' => -100,
+        'group' => CSS_SYSTEM,
       ),
     ),
   );
-
+  $libraries['fawesome.fapi'] = array(
+    'title' => 'Font Awesome Field API Select',
+    'website' => 'http://www.github.com/jacerider',
+    'version' => '7.x-2.x',
+    'js' => array(
+      drupal_get_path('module', 'fawesome') . '/js/fawesome.iconpicker.js' => array('weight' => 99),
+      drupal_get_path('module', 'fawesome') . '/js/fawesome.fapi.js' => array('weight' => 100),
+    ),
+    'css' => array(
+      drupal_get_path('module', 'fawesome') . '/css/fawesome.fapi.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
   return $libraries;
 }
