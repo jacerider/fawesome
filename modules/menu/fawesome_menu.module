@@ -1,0 +1,120 @@
+<?php
+
+// /**
+//  * Implements hook_theme_registry_alter().
+//  */
+// function fawesome_menu_theme_registry_alter(&$theme_registry) {
+//   if (!empty($theme_registry['menu_link'])) {
+//     $theme_registry['menu_link']['function'] = 'fawesome_menu_menu_link';
+//   }
+// }
+
+/**
+ * Implements hook_form_alter().
+ */
+function fawesome_menu_form_alter(&$form, &$form_state, $form_id) {
+  if(!empty($form['#node_edit_form']) && !empty($form['menu']['link'])){
+    fawesome_menu_icon_form($form['menu']['link']);
+  }
+  if ($form_id == 'menu_edit_item') {
+    fawesome_menu_icon_form($form);
+    $form['submit']['#weight'] = 9;
+    $form['delete']['#weight'] = 10;
+    $form['#submit'][] = 'fawesome_menu_form_submit';
+  }
+}
+
+/**
+ * Add the form icon selector.
+ */
+function fawesome_menu_icon_form(&$form){
+
+  if (isset($form['mlid']['#value'])) {
+    $options = unserialize(db_query('SELECT options FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $form['mlid']['#value']))->fetchField());
+  }
+
+  $options = !empty($options) ? $options : array();
+  $options += array(
+    'fawesome' => NULL,
+  );
+
+  $form['fawesome'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'fawesome_select',
+    '#default_value' => $options['fawesome'],
+  );
+
+}
+
+/**
+ * Process the submitted form
+ */
+function fawesome_menu_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  fawesome_menu_save($values['mlid'], $values['fawesome']);
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function fawesome_menu_node_insert($node) {
+  fawesome_menu_node_save($node);
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function fawesome_menu_node_update($node) {
+  fawesome_menu_node_save($node);
+}
+
+/**
+ * Helper for hook_node_insert() and hook_node_update().
+ */
+function fawesome_menu_node_save($node) {
+  if (isset($node->menu)) {
+    $link = &$node->menu;
+    if (trim($link['link_title'])) {
+      if (!empty($link['fawesome'])) {
+        fawesome_menu_save($link['mlid'], $link['fawesome']);
+      }
+    }
+  }
+}
+
+/**
+ * Save an icon to a menu item.
+ *
+ * @param $mlid
+ *   The menu id.
+ * @param $enable
+ *   Boolean signifying enabled/disabled.
+ * @param $icon
+ *   The raw icon name.
+ */
+function fawesome_menu_save($mlid, $icon){
+  $options = unserialize(db_query('SELECT options FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $mlid))->fetchField());
+  $update = FALSE;
+  if(!empty($icon)){
+    if(!isset($options['fawesome']) || $options['fawesome'] !== $icon){
+      $options['fawesome'] = $icon;
+      $update = TRUE;
+    }
+  }
+  elseif(isset($options['fawesome'])){
+    unset($options['fawesome']);
+    $update = TRUE;
+  }
+
+  if($update){
+    db_update('menu_links')
+      ->fields(array(
+        'options' => serialize($options),
+      ))
+      ->condition('mlid', $mlid)
+      ->execute();
+
+    // Clear menu cache
+    menu_cache_clear_all();
+  }
+}

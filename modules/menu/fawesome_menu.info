@@ -1,0 +1,7 @@
+name = Font Awesome | Menu
+description = Provides the ability to attach icons to menu items.
+package = User interface
+core = 7.x
+version = "7.x-1.0"
+
+dependencies[] = fawesome
