@@ -117,7 +117,6 @@ function fawesome_field_field_widget_form(&$form, &$form_state, $field, $instanc
 
     case 'fawesome_field_select':
 
-      // Make this a fieldset with the three text fields.
       $widget += array(
         '#type' => 'fieldset',
         '#delta' => $delta,
