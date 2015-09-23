@@ -5,4 +5,5 @@ core = 7.x
 version = "7.x-2.0"
 
 dependencies[] = sonar
+dependencies[] = jquery_update
 
