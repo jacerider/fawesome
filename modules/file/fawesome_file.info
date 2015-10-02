@@ -1,6 +1,6 @@
 name = Font Awesome | File
 description = File Formatter with Fawesome Support
-package = User interface
+package = Font Awesome
 core = 7.x
 version = "7.x-1.0"
 

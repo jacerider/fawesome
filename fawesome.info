@@ -1,6 +1,6 @@
 name = Font Awesome
 description = Iconic font designed for use with Twitter Bootstrap.
-package = User interface
+package = Font Awesome
 core = 7.x
 version = "7.x-2.0"
 
