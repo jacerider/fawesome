@@ -93,7 +93,7 @@ function fawesome_test(){
  */
 function fawesome_text($text){
   if($icon = fawesome_match($text)){
-    return '<i class="fa fa-' . $icon['icon'] . '"></i><span> ' . $text . '</span>';
+    return '<i class="fa fa-' . $icon['icon'] . '"></i><span class="fa-l"> ' . $text . '</span>';
   }
   return FALSE;
 }
