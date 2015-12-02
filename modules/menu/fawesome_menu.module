@@ -16,7 +16,7 @@ function fawesome_menu_form_alter(&$form, &$form_state, $form_id) {
   if(!empty($form['#node_edit_form']) && !empty($form['menu']['link'])){
     fawesome_menu_icon_form($form['menu']['link']);
   }
-  if ($form_id == 'menu_edit_item') {
+  if ($form_id == 'menu_edit_item' || $form_id == 'theforce_admin_menu_edit_item_form') {
     fawesome_menu_icon_form($form);
     $form['submit']['#weight'] = 9;
     $form['delete']['#weight'] = 10;
