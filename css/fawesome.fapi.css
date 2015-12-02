@@ -28,7 +28,7 @@ form span.fawesome-select-wrapper.prefix{
   height:58px;
   color:#181E21;
   text-align: center;
-  margin-right:20px;
+  margin-right:20px !important;
   font-size:30px;
   line-height:58px;
   vertical-align: middle;
@@ -307,7 +307,8 @@ form .fawesome-select-wrapper .fawesome-select-clear{
   margin: 0;
   overflow: hidden;
 }
-.iconpicker * {
+.iconpicker *,
+.iconpicker .iconpicker-items * {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;

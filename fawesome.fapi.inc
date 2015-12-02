@@ -43,7 +43,7 @@ function fawesome_select_validate($element, &$form_state){
  */
 function theme_fawesome_select($vars) {
   $element = $vars['element'];
-  $element['#default_value'] = 'fa-' . $element['#default_value'];
+  $element['#default_value'] = !empty($element['#default_value']) ? 'fa-' . $element['#default_value'] : '';
   $element['#attributes']['type'] = 'fawesome-select';
   $element['#attributes']['class'][] = 'element-hidden';
   element_set_attributes($element, array('id', 'name', 'value', 'size', 'maxlength'));

@@ -93,7 +93,7 @@ function fawesome_test(){
  */
 function fawesome_text($text){
   if($icon = fawesome_match($text)){
-    return '<i class="fa fa-' . $icon['icon'] . '"></i> ' . $text;
+    return '<i class="fa fa-' . $icon['icon'] . '"></i><span> ' . $text . '</span>';
   }
   return FALSE;
 }
@@ -169,12 +169,16 @@ function fawesome_icons(){
  * Implements hook_fawesome_icons().
  */
 function fawesome_fawesome_icons(){
-  return array(
+  $icons = array(
     '^view'               => 'eye',
     '^edit'               => 'edit',
     '^create'             => 'plus-square',
+    '^add'                => 'plus-square',
     '^delete'             => 'trash-o',
     'devel'               => 'code',
+    'import'              => 'download',
+    'update'              => 'refresh',
+    'list'                => 'th-list',
     'log out'             => 'power-off',
     'logout'              => 'power-off',
     'my account'          => 'user',
@@ -183,20 +187,37 @@ function fawesome_fawesome_icons(){
     'manage registration' => 'flag',
     'registrations'       => 'flag',
     'email registrants'   => 'envelope',
+    'e-mails'             => 'envelope',
     'dashboard'           => 'dashboard',
     'menus'               => 'sitemap',
     'taxonomy'            => 'tag',
     'users'               => 'users',
     'translations'        => 'globe',
     'translate'           => 'globe',
+    'uninstall'           => 'trash-o',
     'settings'            => 'cog',
+    'global settings'     => 'cogs',
     'webform'             => 'th-list',
     'results'             => 'bar-chart-o',
     'order nodes'         => 'arrows',
     'order items'         => 'arrows',
     'nodequeue'           => 'sort',
     'path-based metatags' => 'tag',
+    'patter'              => 'qrcode',
+    'bulk generate'       => 'archive',
+    'manage fields'       => 'list-alt',
+    'form components'     => 'list-alt',
+    'conditionals'        => 'sitemap',
+    'rules'               => 'rocket',
   );
+
+  // Add themes as icons.
+  $themes = list_themes();
+  foreach($themes as $theme){
+    $icons[strtolower($theme->info['name'])] = 'paint-brush';
+  }
+
+  return $icons;
 }
 
 /**
