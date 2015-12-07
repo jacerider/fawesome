@@ -12,10 +12,13 @@ form span.fawesome-select-wrapper.prefix{
 
 .fawesome-select-wrapper a{
   float:left;
+  margin:0 !important;
+  padding:0 !important;
 }
 
-.fawesome-select-ops{
+.fawesome-select-wrapper a.fawesome-select-ops{
   display:block;
+  margin-right: 10px !important;
 }
 
 .fawesome-select-ops span{
@@ -28,7 +31,7 @@ form span.fawesome-select-wrapper.prefix{
   height:58px;
   color:#181E21;
   text-align: center;
-  margin-right:20px !important;
+  margin-right:10px !important;
   font-size:30px;
   line-height:58px;
   vertical-align: middle;

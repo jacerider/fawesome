@@ -57,7 +57,7 @@ function theme_fawesome_select($vars) {
   drupal_add_library('fawesome', 'fawesome.fapi');
   drupal_add_js(array('fawesome' => array('icons' => $icons)), 'setting');
 
-  $output = '<div class="fawesome-select">';
+  $output = '<div class="fawesome-select clearfix">';
   $output .= '<span class="prefix fawesome-select-wrapper">';
   $output .= '<a href="#" class="fawesome-select-ops">';
   $output .= '<span class="fawesome-select-select">&nbsp;<i class="fa"></i>&nbsp;</span>';
