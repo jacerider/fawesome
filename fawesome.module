@@ -91,22 +91,25 @@ function fawesome_test(){
 /**
  * Return text with icon preprended.
  */
-function fawesome_text($text){
-  if($icon = fawesome_match($text)){
-    return '<i class="fa fa-' . $icon['icon'] . '"></i><span class="fa-l"> ' . $text . '</span>';
+function fawesome_text($text, $replace = FALSE, $default = NULL){
+  if($icon = fawesome_match($text, $default)){
+    return $replace ? '<i class="fa fa-' . $icon['icon'] . '"></i>' : '<i class="fa fa-' . $icon['icon'] . '"></i><span class="fa-l"> ' . $text . '</span>';
   }
-  return FALSE;
+  return $text;
 }
 
 /**
  * Match text to find a valid icon.
  */
-function fawesome_match($text){
+function fawesome_match($text, $default = NULL){
   $cache = &drupal_static(__FUNCTION__);
   $text = strtolower($text);
   if(!isset($icons[$text])){
     $icons = fawesome_icons();
-    $cache[$text] = isset($icons[$text]) ? array('icon' => $icons[$text]) : FALSE;
+    if(!isset($icons[$text]) && $default){
+      $icons[$text] = $default;
+    }
+    $cache[$text] = isset($icons[$text]) ? array('icon' => $icons[$text]) : NULL;
     if(!$cache[$text]){
       $matches = array();
       foreach($icons as $pattern => $data){
@@ -170,45 +173,52 @@ function fawesome_icons(){
  */
 function fawesome_fawesome_icons(){
   $icons = array(
-    '^view'               => 'eye',
-    '^edit'               => 'edit',
-    '^create'             => 'plus-square',
-    '^add'                => 'plus-square',
-    '^delete'             => 'trash-o',
-    'devel'               => 'code',
-    'import'              => 'download',
-    'update'              => 'refresh',
-    'list'                => 'th-list',
-    'log out'             => 'power-off',
-    'logout'              => 'power-off',
-    'my account'          => 'user',
-    'home'                => 'home',
-    'manage display'      => 'desktop',
+    '^view' => 'eye',
+    '^edit' => 'edit',
+    '^create' => 'plus-square',
+    '^add' => 'plus-square',
+    '^delete' => 'trash-o',
+    '^disable' => 'ban',
+    'devel' => 'code',
+    'import' => 'download',
+    'update' => 'refresh',
+    'list' => 'th-list',
+    'log out' => 'power-off',
+    'logout' => 'power-off',
+    'my account' => 'user',
+    'home' => 'home',
+    'manage display' => 'desktop',
     'manage registration' => 'flag',
-    'registrations'       => 'flag',
-    'email registrants'   => 'envelope',
-    'e-mails'             => 'envelope',
-    'dashboard'           => 'dashboard',
-    'menus'               => 'sitemap',
-    'taxonomy'            => 'tag',
-    'users'               => 'users',
-    'translations'        => 'globe',
-    'translate'           => 'globe',
-    'uninstall'           => 'trash-o',
-    'settings'            => 'cog',
-    'global settings'     => 'cogs',
-    'webform'             => 'th-list',
-    'results'             => 'bar-chart-o',
-    'order nodes'         => 'arrows',
-    'order items'         => 'arrows',
-    'nodequeue'           => 'sort',
+    'registrations' => 'flag',
+    'email registrants' => 'envelope',
+    'e-mails' => 'envelope',
+    'dashboard' => 'dashboard',
+    'menus' => 'sitemap',
+    'taxonomy' => 'tag',
+    'users' => 'users',
+    'translations' => 'globe',
+    'translate' => 'globe',
+    'uninstall' => 'trash-o',
+    'settings' => 'cog',
+    'global settings' => 'cogs',
+    'webform' => 'th-list',
+    'results' => 'bar-chart-o',
+    'order nodes' => 'arrows',
+    'order items' => 'arrows',
+    'nodequeue' => 'sort',
     'path-based metatags' => 'tag',
-    'patter'              => 'qrcode',
-    'bulk generate'       => 'archive',
-    'manage fields'       => 'list-alt',
-    'form components'     => 'list-alt',
-    'conditionals'        => 'sitemap',
-    'rules'               => 'rocket',
+    'patter' => 'qrcode',
+    'bulk generate' => 'archive',
+    'manage fields' => 'list-alt',
+    'form components' => 'list-alt',
+    'conditionals' => 'sitemap',
+    'rules' => 'rocket',
+    'people' => 'users',
+    'account settings' => 'users',
+    'reports' => 'bug',
+    'configuration' => 'cogs',
+    'appearance' => 'paint-brush',
+    'site information' => 'info-circle',
   );
 
   // Add themes as icons.
