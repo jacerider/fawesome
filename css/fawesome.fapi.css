@@ -10,7 +10,7 @@ form span.fawesome-select-wrapper.prefix{
   z-index:10;
 }
 
-.fawesome-select-wrapper a{
+.fawesome-select-wrapper > a{
   float:left;
   margin:0 !important;
   padding:0 !important;
