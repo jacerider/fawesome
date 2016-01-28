@@ -60,6 +60,10 @@ form .fawesome-select-wrapper .fawesome-select-clear{
   font-size:26px;
 }*/
 
+.iconpicker *{
+  box-sizing: content-box !important;
+}
+
 .iconpicker-container{
   position: relative;
 }
@@ -335,7 +339,7 @@ form .fawesome-select-wrapper .fawesome-select-clear{
   overflow: hidden;
   overflow-y: auto;
   min-height: 49px;
-  max-height: 246px;
+  max-height: 146px;
 }
 .iconpicker .iconpicker-items:before,
 .iconpicker .iconpicker-items:after {
