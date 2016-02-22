@@ -6,7 +6,7 @@
   Drupal.behaviors.fawesome_fapi = {
     attach: function(context, settings) {
       if(settings.fawesome && settings.fawesome.icons){
-        $('.fawesome-select').once(function(){
+        $('.fawesome-select-container').once(function(){
           var self = this;
 
           $('.fawesome-select-ops', self).click(function(e){
