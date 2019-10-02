@@ -7,3 +7,5 @@ This module uses the SCSS of Font Awesome.
 ## How to install
 
 Just enable the module. There are no settings. It just works.
+
+Ensure that the `font-family: FontAwesome;` is set.
